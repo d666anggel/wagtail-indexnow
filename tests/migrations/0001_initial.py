@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("wagtailcore", "0089_log_entry_data_json_null_to_object"),
+        ("wagtailcore", "0078_referenceindex"),
     ]
 
     operations = [
