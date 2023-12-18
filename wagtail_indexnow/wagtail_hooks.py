@@ -40,6 +40,4 @@ def notify_indexnow(request, page):
             "urlList": [page_url],
             "key": "indexnow-" + get_key(),
         },
-    )
-
-    # We don't check the return code - it either worked or it didn't.
+    ).raise_for_status()
