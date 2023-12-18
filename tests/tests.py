@@ -1,10 +1,12 @@
 import requests_mock
 from django.test import SimpleTestCase, TestCase
 from wagtail.coreutils import get_dummy_request
-from wagtail.models import Page
+from wagtail.models import Site
 
 from wagtail_indexnow import wagtail_hooks
 from wagtail_indexnow.utils import get_key
+
+from .models import TestPage
 
 
 class KeyTestCase(SimpleTestCase):
@@ -27,7 +29,11 @@ class KeyViewTestCase(SimpleTestCase):
 @requests_mock.Mocker()
 class IndexNowTestCase(TestCase):
     def setUp(self):
-        self.page = Page.objects.first()
+        self.root_page = Site.objects.first().root_page
+
+        self.root_page.add_child(instance=TestPage(title="Test page"))
+
+        self.page = self.root_page.get_children().get()
 
     def test_pings(self, m):
         m.register_uri("POST", "https://api.indexnow.org/indexnow")
@@ -38,7 +44,14 @@ class IndexNowTestCase(TestCase):
 
         self.assertEqual(m.call_count, 1)
 
-        self.assertEqual(m.request_history[0].json()["key"], "indexnow-" + get_key())
+        self.assertEqual(
+            m.request_history[0].json(),
+            {
+                "host": "localhost",
+                "urlList": [self.page.full_url],
+                "key": "indexnow-" + get_key(),
+            },
+        )
 
     def test_noop_if_should_not_notify(self, m):
         setattr(self.page, wagtail_hooks.SHOULD_NOTIFY_PAGE_ATTRIBUTE, False)
