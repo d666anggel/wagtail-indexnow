@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "wagtail-indexnow"
-description = ""
+description = "A Wagtail package to automatically submit published pages for search engine indexing"
 authors = [
     {name = "Jake Howard"},
 ]
