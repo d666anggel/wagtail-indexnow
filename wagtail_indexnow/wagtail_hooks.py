@@ -19,11 +19,18 @@ def check_notify_page(request, page):
         "last_published_at", flat=True
     )[0]
 
-    setattr(
-        page,
-        SHOULD_NOTIFY_PAGE_ATTRIBUTE,
-        (timezone.now() - timedelta(minutes=10)) >= last_published_at,
-    )
+    if last_published_at:
+        setattr(
+            page,
+            SHOULD_NOTIFY_PAGE_ATTRIBUTE,
+            (timezone.now() - timedelta(minutes=10)) >= last_published_at,
+        )
+    else:
+        setattr(
+            page,
+            SHOULD_NOTIFY_PAGE_ATTRIBUTE,
+            True,
+        )
 
 
 @hooks.register("after_publish_page")
